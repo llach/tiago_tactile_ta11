@@ -1,0 +1,12 @@
+scaling: 1000.0
+smoothing: 10
+resolutionIndex: 1
+gainIndex: 2
+settlingFactor:  0
+differential: True
+
+right_m: -509.872467343
+right_b: 0.119775017855
+
+left_m: -508.400473239
+left_b: 0.157910567142
