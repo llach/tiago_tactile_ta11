@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>tiago_tactile</name>
+  <name>tiago_tactile_ta11</name>
   <version>0.0.1</version>
   <description>Publisher nodes for tactile data on TIAGo</description>
 
