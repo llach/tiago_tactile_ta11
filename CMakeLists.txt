@@ -7,6 +7,7 @@ project(tiago_tactile_ta11)
 find_package(catkin REQUIRED
   message_generation
   rospy
+  roscpp
   std_msgs
   )
 
@@ -46,7 +47,7 @@ include_directories(
     ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(ta11_pub src/ta11.cpp src/u6.cpp)
+add_executable(ta11_pub src/nodes/ta11_pub.cpp src/ta11.cpp src/u6.cpp)
 target_link_libraries(ta11_pub ${catkin_LIBRARIES} labjackusb)
 
 install(PROGRAMS
