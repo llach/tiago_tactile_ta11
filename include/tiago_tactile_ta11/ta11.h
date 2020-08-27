@@ -5,6 +5,8 @@
 #ifndef TIAGO_TACTILE_TA11_TA11_H
 #define TIAGO_TACTILE_TA11_TA11_H
 
+#include <mutex>
+
 #include "ros/ros.h"
 #include "tiago_tactile_ta11/u6.h"
 
@@ -19,6 +21,7 @@ public:
     TA11();
     ~TA11();
 
+    std::mutex values_lock;
     std::vector<float> values;
 
     void read_loop();

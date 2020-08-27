@@ -6,10 +6,10 @@ import rospy
 import numpy as np
 
 from _collections import deque
-from tiago_tactile.msg import TA11
+from sensor_msgs.msg import Float64MultiArray
 
 rospy.init_node('ta11_tactile', anonymous=True)
-pub = rospy.Publisher('tactile/load_cell', TA11, queue_size=1)
+pub = rospy.Publisher('/ta11', TA11, queue_size=1)
 
 numChannels = 2
 
@@ -49,9 +49,8 @@ try:
         for j in range(numChannels):
             latest_values[j].append(d.binaryToCalibratedAnalogVoltage(gainIndex, results[2 + j]) * SCALING)
 
-        m = TA11()
-        m.header.stamp = rospy.Time.now()
-        m.sensor_values = [np.mean(dq) for dq in latest_values]
+        m = Float64MultiArray()
+        m.data = [np.mean(dq) for dq in latest_values]
 
         pub.publish(m)
 finally:

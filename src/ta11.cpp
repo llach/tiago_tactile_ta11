@@ -2,9 +2,6 @@
 #include "tiago_tactile_ta11/ta11.h"
 
 
-int configIO(HANDLE hDevice);
-int feedback_loop(HANDLE hDevice, u6CalibrationInfo *caliInfo);
-
 namespace tiago_tactile_ta11{
 
   TA11::TA11() {
@@ -189,7 +186,9 @@ namespace tiago_tactile_ta11{
       getAinVoltCalibrated(&_caliInfo, 8, 0, 1, _recBuff[12] + _recBuff[13] * 256 + _recBuff[14] * 65536, &v2);
       ROS_DEBUG_NAMED("forceValues", "AIN0 %.6f AIN1 %.6f\n", v1, v2);
 
-      sleep(1); // todo don't
+      const std::lock_guard<std::mutex> lock(values_lock);
+      values[0] = v1;
+      values[1] = v2;
     } // while
   }
 }
