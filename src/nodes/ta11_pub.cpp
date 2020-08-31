@@ -20,6 +20,8 @@ int main (int argc, char** argv) {
 
   while (ros::ok()){
     tiago_tactile_msgs::TA11 tac;
+    tac.header.frame_id = "base_link";
+
     tac.frame_names.push_back(sensor_frames[0]);
     tac.frame_names.push_back(sensor_frames[1]);
 
