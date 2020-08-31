@@ -11,7 +11,7 @@ int main (int argc, char** argv) {
   ros::AsyncSpinner spinner(4);
   spinner.start();
 
-  std::vector<std::string> sensor_frames = {"ta11_left_finger_link", "ta11_right_finger_link"};
+  std::vector<std::string> sensor_frames = {"ta11_right_finger_link", "ta11_left_finger_link"};
 
   tiago_tactile_ta11::TA11 t;
   std::thread th(&tiago_tactile_ta11::TA11::read_loop, std::ref(t));
@@ -20,6 +20,7 @@ int main (int argc, char** argv) {
 
   while (ros::ok()){
     tiago_tactile_msgs::TA11 tac;
+    tac.header.stamp = ros::Time::now();
     tac.header.frame_id = "base_link";
 
     tac.frame_names.push_back(sensor_frames[0]);

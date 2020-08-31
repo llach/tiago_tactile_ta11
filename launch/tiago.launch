@@ -64,9 +64,7 @@
     <node name="kd45_left_tf"  pkg="tf" type="static_transform_publisher" args="0 0 -0.21 0 0 0 gripper_left_finger_link ta11_left_finger_link 100"   output="screen"/>
 
     <!-- sensor publisher -->
-    <node name="ta11_publisher" pkg="tiago_tactile_ta11" type="ta11_pub" required="true" output="screen">
-        <rosparam command="load" file="$(find tiago_tactile_ta11)/config/ta11.yaml" />
-    </node>
+    <include file="$(find tiago_tactile_ta11)/launch/publish.launch"/>
 
     <!-- point cloud throttle and filter -->
     <group unless="$(arg public_sim)">
