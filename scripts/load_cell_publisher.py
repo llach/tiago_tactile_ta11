@@ -6,7 +6,7 @@ import rospy
 import numpy as np
 
 from _collections import deque
-from sensor_msgs.msg import Float64MultiArray
+from tiago_tactile_msgs.msg import TA11
 
 rospy.init_node('ta11_tactile', anonymous=True)
 pub = rospy.Publisher('/ta11', TA11, queue_size=1)
@@ -24,6 +24,11 @@ latest_values = [deque(maxlen=SMOOTHING) for _ in range(numChannels)]
 
 d = u6.U6()
 d.getCalibrationData()
+
+sensor_frames = [
+    "left",
+    "right"
+]
 
 try:
     # Configure the IOs before the test starts
@@ -49,8 +54,9 @@ try:
         for j in range(numChannels):
             latest_values[j].append(d.binaryToCalibratedAnalogVoltage(gainIndex, results[2 + j]) * SCALING)
 
-        m = Float64MultiArray()
-        m.data = [np.mean(dq) for dq in latest_values]
+        m = TA11()
+        m.header.stamp = rospy.Time.now()
+        m.sensor_values = [np.mean(dq) for dq in latest_values]
 
         pub.publish(m)
 finally:

@@ -4,7 +4,7 @@
     <arg name="sensor" default="1"/>
     <arg name="calibrate" default="0"/>
 
-	<node name="measure_ta11" pkg="tiago_tactile" type="measure.py" args="--sensor $(arg sensor) --calibrate $(arg calibrate)" output="screen">
-		<rosparam command="load" file="$(find tiago_tactile)/config/ta11.yaml" />
+	<node name="measure_ta11" pkg="tiago_tactile_ta11" type="measure.py" args="--sensor $(arg sensor) --calibrate $(arg calibrate)" output="screen">
+		<rosparam command="load" file="$(find tiago_tactile_ta11)/config/ta11.yaml" />
 	</node>
 </launch>

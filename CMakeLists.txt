@@ -4,7 +4,9 @@ project(tiago_tactile_ta11)
 find_package(catkin REQUIRED
   rospy
   roscpp
+  tiago_tactile_msgs
   )
+
 
 ###################################
 ## catkin specific configuration ##
