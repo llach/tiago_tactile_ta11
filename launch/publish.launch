@@ -8,9 +8,4 @@
 		    <rosparam command="load" file="$(find tiago_tactile_ta11)/config/ta11-mounted.yaml" />
 	    </node>
     </group>
-
-    <group if="$(arg sim)">
-        <node name="ta11_fake" pkg="ta11_test" type="ta11_test" output="screen" />
-    </group>
-
 </launch>

@@ -25,6 +25,8 @@
 
     <env name="LC_NUMERIC" value="C" />
 
+    <rosparam command="load" file="$(find ta11_controller)/config/pal-gripper_ta11_controller.yaml" />
+
     <!-- start up world -->
     <include file="$(find pal_gazebo_worlds)/launch/pal_gazebo.launch">
         <arg name="world" value="$(arg world)"/>
@@ -64,6 +66,8 @@
     <!-- static transforms for sensor frames -->
     <node name="kd45_right_tf" pkg="tf" type="static_transform_publisher" args="0 0 -0.21 0 0 0 gripper_right_finger_link ta11_right_finger_link 100" output="screen"/>
     <node name="kd45_left_tf"  pkg="tf" type="static_transform_publisher" args="0 0 -0.21 0 0 0 gripper_left_finger_link ta11_left_finger_link 100"   output="screen"/>
+    
+    <node pkg="rqt_gui" type="rqt_gui" name="rqt_gui_ta11" output="screen" args="--standalone ta11_tiago" />
 
     <!-- sensor publisher -->
     <include file="$(find tiago_tactile_ta11)/launch/publish.launch">
