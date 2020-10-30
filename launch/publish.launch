@@ -8,4 +8,10 @@
 		    <rosparam command="load" file="$(find tiago_tactile_ta11)/config/ta11-mounted.yaml" />
 	    </node>
     </group>
+
+    <group if="$(arg sim)">
+        <node name="measure_ta11" pkg="tiago_tactile_ta11" type="load_cell_publisher.py" required="true" output="screen">
+		    <rosparam command="load" file="$(find tiago_tactile_ta11)/config/ta11.yaml" />
+	    </node>
+    </group>
 </launch>

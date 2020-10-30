@@ -8,8 +8,10 @@ import numpy as np
 from _collections import deque
 from tiago_tactile_msgs.msg import TA11
 
+topic = '/ta11'
+
 rospy.init_node('ta11_tactile', anonymous=True)
-pub = rospy.Publisher('/ta11', TA11, queue_size=1)
+pub = rospy.Publisher(topic, TA11, queue_size=1)
 
 numChannels = 2
 
@@ -69,7 +71,7 @@ try:
     feedbackArguments.append(u6.AIN24(0, resolutionIndex, gainIndex, settlingFactor, differential))
     feedbackArguments.append(u6.AIN24(2, resolutionIndex, gainIndex, settlingFactor, differential))
 
-    rospy.loginfo("Publishing sensor values!")
+    rospy.loginfo("Publishing sensor values on {}".format(topic))
     while not rospy.is_shutdown():
         results = d.getFeedback(feedbackArguments)
 
