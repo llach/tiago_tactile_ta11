@@ -7,7 +7,7 @@ import argparse
 
 import numpy as np
 
-ITERATIONS = 1000
+ITERATIONS = 10000
 
 rospy.init_node('ta11_tactile', anonymous=True)
 
@@ -25,14 +25,14 @@ left_m = rospy.get_param("~left_m")
 left_b = rospy.get_param("~left_b")
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-c', '--calibrate', default=0, type=int)
+parser.add_argument('-c', '--calibrated', default=0, type=int)
 parser.add_argument('-s', '--sensor', default=1, type=int)
 
 args, _ = parser.parse_known_args()
 
 # sensor 1 (default) is connected to AIN0, sensor 2 is connected to AIN2
 sensor = 2 if args.sensor == 2 else 0
-cal = False if args.calibrate == 0 else True
+cal = False if args.calibrated == 0 else True
 if sensor == 2:
     _m = left_m
     _b = left_b

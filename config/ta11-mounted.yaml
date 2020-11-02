@@ -1,12 +1,12 @@
 scaling: 1000.0
-smoothing: 10
+smoothing: 20
 resolutionIndex: 1
 gainIndex: 2
 settlingFactor:  0
 differential: True
 
 right_m: 1.0
-right_b: 0.0690979924947
+right_b: 0.08714
 
 left_m: 1.0
-left_b: 0.130114241402
+left_b: 0.11807
