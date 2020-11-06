@@ -7,6 +7,7 @@ find_package(catkin REQUIRED
   tiago_tactile_msgs
   )
 
+disable_pal_flags()
 
 ###################################
 ## catkin specific configuration ##
