@@ -8,7 +8,6 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from _collections import deque
 from tiago_tactile_msgs.msg import TA11
 sns.set(style="darkgrid")
 
