@@ -32,7 +32,7 @@ print(
     "\n~~~ TA11 Sensor Measurement ~~~\n\n" +
     "Parameters:\n" +
     "Scaling:\t {}\n".format(SCALING) +
-    "Smmothing:\t {}\n".format(SMOOTHING) +
+    "Smoothing:\t {}\n".format(SMOOTHING) +
     "ResIndex\t {}\n".format(resolutionIndex) +
     "Gain:\t\t {}\n".format(gainIndex) +
     "Settling:\t {}\n".format(settlingFactor) +
