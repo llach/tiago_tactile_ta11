@@ -3,6 +3,8 @@
 <launch>
     <arg name="sim" default="false" />
 
+    <include file="$(find tiago_tactile_ta11)/launch/load_controller.launch" />
+
     <group unless="$(arg sim)">
         <node name="measure_ta11" pkg="tiago_tactile_ta11" type="load_cell_publisher.py" required="true" output="screen">
 		    <rosparam command="load" file="$(find tiago_tactile_ta11)/config/ta11-mounted.yaml" />
