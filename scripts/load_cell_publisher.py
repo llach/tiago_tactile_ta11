@@ -87,7 +87,7 @@ try:
             _m = right_m if i == 0 else left_m
             _b = right_b if i == 0 else left_b
 
-            m.sensor_values.append(_m * np.mean(latest_values[i]) + _b)
+            m.sensor_values.append(-1 * (_m * np.mean(latest_values[i]) + _b))
 
         pub.publish(m)
 finally:
