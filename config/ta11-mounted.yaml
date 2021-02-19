@@ -1,6 +1,6 @@
 scaling: 1000.0
 smoothing: 20
-resolutionIndex: 1
+resolutionIndex: 0
 gainIndex: 3 # before: 2
 settlingFactor:  0
 differential: True
