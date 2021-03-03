@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from tiago_tactile_msgs.msg import TA11
 sns.set(style="darkgrid")
 
-numSamples = 10000
+numSamples = 500
 
 sides = {
     0: "right",

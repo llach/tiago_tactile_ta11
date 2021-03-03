@@ -6,7 +6,7 @@ settlingFactor:  0
 differential: True
 
 right_m: 1.0
-right_b: 0.08714
+right_b: 0.13675
 
 left_m: 1.0
-left_b: 0.11807
+left_b: 0.17424
