@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <node name="measure_delay_ta11" pkg="tiago_tactile_ta11" type="measure_delay.py" required="true" output="screen">
+        <rosparam command="load" file="$(find tiago_tactile_ta11)/config/ta11-mounted.yaml" />
+    </node>
+
+    <node name="delay_plot" pkg="rqt_plot" type="rqt_plot" args="/contact/data /single_ta11/data" />
+</launch>
