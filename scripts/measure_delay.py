@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+import os
 import u6
 import time
 import rospy
+import pickle
 
 import numpy as np
 
@@ -37,9 +39,11 @@ _b = 0
 max_con = 0
 mu_con = 0
 
-dev = 50
+dev = 5
 
 thresh = np.inf
+
+resp_times = []
 
 try:
     # Configure the IOs before the test starts
@@ -73,7 +77,7 @@ try:
         contact = d.binaryToCalibratedAnalogVoltage(0, results[2])
 
         sensor_values.append(d.binaryToCalibratedAnalogVoltage(gainIndex, results[3]) * SCALING)
-        force = (-1 * (np.mean(sensor_values) + _b))
+        force = (-1 * ((np.mean(sensor_values) + _b)))
 
         if loop < 500:
             if loop == 0:
@@ -105,16 +109,21 @@ try:
 
             # we're in contact and measured the force
             if in_contact and np.abs(force) > thresh and not did_trigger:
-                print("_b {} | force {} | thresh {}".format(_b, force, thresh))
-                print("delay: {}".format(datetime.now() - startTime))
+                # assumption: delay < 1sec
+                resp_times.append((datetime.now() - startTime).microseconds)
+                print(resp_times[-1])
+
+                print("delay: {} #samples {}".format(np.median(resp_times), len(resp_times)))
                 did_trigger = True
 
             # contact lost
             if not has_contact and in_contact:
                 in_contact = False
 
-
             cpub.publish(has_contact)
             spub.publish(force)
 finally:
+    print('bye')
+    with open('{}/resp_times.pkl'.format(os.environ['HOME']), 'w') as f:
+        pickle.dump(resp_times, f)
     d.close()
