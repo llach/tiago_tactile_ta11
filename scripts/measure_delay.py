@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 import u6
+import time
 import rospy
 
 import numpy as np
 
+from datetime import datetime
 from _collections import deque
 from std_msgs.msg import Bool, Float64
 
@@ -35,6 +37,10 @@ _b = 0
 max_con = 0
 mu_con = 0
 
+dev = 50
+
+thresh = np.inf
+
 try:
     # Configure the IOs before the test starts
     rospy.loginfo("Preparing LabJack U6 ...")
@@ -55,9 +61,12 @@ try:
 
     loop = 0
 
+    in_contact = False
+    did_trigger = False
+    startTime = time.time()
+
     rospy.loginfo("Starting ...")
     while not rospy.is_shutdown():
-
 
         results = d.getFeedback(feedbackArguments)
 
@@ -77,14 +86,35 @@ try:
         else:
             if loop == 500:
                 _b = np.mean(calib_sensor)
+                thresh = np.max(calib_sensor-_b) * (1 + (dev/100))
 
                 max_con = np.max(calib_contact)
                 mu_con = np.mean(calib_contact)
 
-                print("Done. Force Bias {} | contact mean {} | contact max {}".format(_b, mu_con, max_con))
+                print("Done. Force Bias {} | Force Thresh {} | contact mean {} | contact max {} ".format(_b, thresh, mu_con, max_con))
                 loop += 1
 
-            cpub.publish(contact > (max_con*1.05))
+            has_contact = contact > (max_con*1.05)
+
+            # contact acquired
+            if not in_contact and has_contact:
+                print("circuit closed.")
+                in_contact = True
+                did_trigger = False
+                startTime = datetime.now()
+
+            # we're in contact and measured the force
+            if in_contact and np.abs(force) > thresh and not did_trigger:
+                print("_b {} | force {} | thresh {}".format(_b, force, thresh))
+                print("delay: {}".format(datetime.now() - startTime))
+                did_trigger = True
+
+            # contact lost
+            if not has_contact and in_contact:
+                in_contact = False
+
+
+            cpub.publish(has_contact)
             spub.publish(force)
 finally:
     d.close()
