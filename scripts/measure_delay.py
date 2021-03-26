@@ -69,15 +69,18 @@ try:
     did_trigger = False
     startTime = time.time()
 
+    loop_diff = 0
+
     rospy.loginfo("Starting ...")
     while not rospy.is_shutdown():
-
+        startTime = datetime.now()
         results = d.getFeedback(feedbackArguments)
 
         contact = d.binaryToCalibratedAnalogVoltage(0, results[2])
 
         sensor_values.append(d.binaryToCalibratedAnalogVoltage(gainIndex, results[3]) * SCALING)
         force = (-1 * ((np.mean(sensor_values) + _b)))
+        rt = (datetime.now() - startTime)
 
         if loop < 500:
             if loop == 0:
@@ -102,23 +105,22 @@ try:
 
             # contact acquired
             if not in_contact and has_contact:
-                print("circuit closed.")
                 in_contact = True
                 did_trigger = False
-                startTime = datetime.now()
+                # startTime = datetime.now()
+                loop_diff += 1
 
             # we're in contact and measured the force
             if in_contact and np.abs(force) > thresh and not did_trigger:
                 # assumption: delay < 1sec
-                resp_times.append((datetime.now() - startTime).microseconds)
-                print(resp_times[-1])
-
-                print("delay: {} #samples {}".format(np.median(resp_times), len(resp_times)))
+                resp_times.append(rt.microseconds)
+                print(np.mean(resp_times), len(resp_times))
                 did_trigger = True
 
             # contact lost
             if not has_contact and in_contact:
                 in_contact = False
+                loop_diff = 0
 
             cpub.publish(has_contact)
             spub.publish(force)
