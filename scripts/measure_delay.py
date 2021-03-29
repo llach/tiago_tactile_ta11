@@ -22,9 +22,10 @@ numChannels = 2
 
 SCALING = rospy.get_param("~scaling")
 SMOOTHING = rospy.get_param("~smoothing")
-resolutionIndex = rospy.get_param("~resolutionIndex")
 gainIndex = rospy.get_param("~gainIndex")
-settlingFactor = rospy.get_param("~settlingFactor")
+
+resolutionIndex = 0
+settlingFactor = 0
 
 calib_sensor = []
 calib_contact = []

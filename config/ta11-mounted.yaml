@@ -1,12 +1,4 @@
 scaling: 1000.0
 smoothing: 4
-resolutionIndex: 0
-gainIndex: 1 # before: 2
-settlingFactor:  0
-differential: True
-
-right_m: 1.0
-right_b: 0.04615
-
-left_m: 1.0
-left_b: 0.08062
+gainIndex: 1
+calibrationTime: 1000

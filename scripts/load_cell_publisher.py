@@ -7,42 +7,32 @@ import numpy as np
 
 from _collections import deque
 from tiago_tactile_msgs.msg import TA11
+from tiago_tactile_msgs.srv import GetForceThreshold, GetForceThresholdResponse
 
 topic = '/ta11'
 
 rospy.init_node('ta11_tactile', anonymous=True)
 pub = rospy.Publisher(topic, TA11, queue_size=1)
 
+thresh_srv = None
+
 numChannels = 2
 
 SCALING = rospy.get_param("~scaling")
 SMOOTHING = rospy.get_param("~smoothing")
-resolutionIndex = rospy.get_param("~resolutionIndex")
 gainIndex = rospy.get_param("~gainIndex")
-settlingFactor = rospy.get_param("~settlingFactor")
-differential = rospy.get_param("~differential")
+calibrationTime = rospy.get_param("~calibrationTime")
 
-right_m = rospy.get_param("~right_m")
-right_b = rospy.get_param("~right_b")
-
-left_m = rospy.get_param("~left_m")
-left_b = rospy.get_param("~left_b")
+resolutionIndex = 0
+settlingFactor = 0
 
 print(
     "\n~~~ TA11 Sensor Measurement ~~~\n\n" +
     "Parameters:\n" +
     "Scaling:\t {}\n".format(SCALING) +
     "Smoothing:\t {}\n".format(SMOOTHING) +
-    "ResIndex\t {}\n".format(resolutionIndex) +
-    "Gain:\t\t {}\n".format(gainIndex) +
-    "Settling:\t {}\n".format(settlingFactor) +
-    "\n" +
-    "right_m:\t {}\n".format(right_m) +
-    "right_b:\t {}\n\n".format(right_b) +
-    "left_m:\t\t {}\n".format(left_m) +
-    "left_b:\t\t {}\n\n".format(left_b)
+    "Gain:\t\t {}\n".format(gainIndex)
 )
-
 
 latest_values = [deque(maxlen=SMOOTHING) for _ in range(numChannels)]
 
@@ -53,6 +43,17 @@ sensor_frames = [
     "ta11_right_finger_link",
     "ta11_left_finger_link"
 ]
+
+right_b = 0
+left_b = 0
+
+biased_right = []
+biased_left = []
+
+thresh = 0
+
+def get_thresh(req):
+    return GetForceThresholdResponse(threshold=thresh)
 
 try:
     # Configure the IOs before the test starts
@@ -68,27 +69,53 @@ try:
     feedbackArguments.append(u6.DAC0_8(Value=125))
     feedbackArguments.append(u6.PortStateRead())
 
-    feedbackArguments.append(u6.AIN24(0, resolutionIndex, gainIndex, settlingFactor, differential))
-    feedbackArguments.append(u6.AIN24(2, resolutionIndex, gainIndex, settlingFactor, differential))
+    feedbackArguments.append(u6.AIN24(0, resolutionIndex, gainIndex, settlingFactor, True))
+    feedbackArguments.append(u6.AIN24(2, resolutionIndex, gainIndex, settlingFactor, True))
 
-    rospy.loginfo("Publishing sensor values on {}".format(topic))
+    cycle = 0
+
+    calibrated = False
+
+    rospy.loginfo("Calibrating sensors using {} samples ...".format(calibrationTime))
     while not rospy.is_shutdown():
         results = d.getFeedback(feedbackArguments)
 
-        for j in range(numChannels):
-            latest_values[j].append(d.binaryToCalibratedAnalogVoltage(gainIndex, results[2 + j]) * SCALING)
+        processed_values = []
+        for i in range(numChannels):
+            latest_values[i].append(d.binaryToCalibratedAnalogVoltage(gainIndex, results[2 + i]) * SCALING)
 
-        m = TA11()
-        m.header.frame_id = "base_link"
-        m.header.stamp = rospy.Time.now()
-
-        m.frame_names = sensor_frames
-        for i in range(len(sensor_frames)):
-            _m = right_m if i == 0 else left_m
             _b = right_b if i == 0 else left_b
+            processed_values.append(-1 * (np.mean(latest_values[i]) + _b))
 
-            m.sensor_values.append(-1 * (_m * np.mean(latest_values[i]) + _b))
+        if not calibrated:
+            cycle += 1
 
-        pub.publish(m)
+            biased_right.append(processed_values[0])
+            biased_left.append(processed_values[1])
+
+            if cycle > calibrationTime:
+                calibrated = True
+
+                right_b = np.mean(biased_right)
+                left_b = np.mean(biased_left)
+
+                thresh = np.max([np.abs(np.max(biased_right) - right_b), np.abs(np.max(biased_left) - left_b)]) * 1.05
+
+                thresh_srv = rospy.Service('get_ta11_threshold', GetForceThreshold, get_thresh)
+
+                rospy.loginfo("Calibration done! Bias Right: {} | Bias Left: {} | Threshold: {}".format(right_b, left_b, thresh))
+                rospy.loginfo("Publishing sensor values on {}".format(topic))
+
+                latest_values = [deque(maxlen=SMOOTHING) for _ in range(numChannels)]
+
+        if calibrated:
+            m = TA11()
+            m.header.frame_id = "base_link"
+            m.header.stamp = rospy.Time.now()
+
+            m.frame_names = sensor_frames
+            m.sensor_values = processed_values
+
+            pub.publish(m)
 finally:
     d.close()
