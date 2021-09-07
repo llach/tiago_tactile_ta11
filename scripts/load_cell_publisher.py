@@ -44,6 +44,16 @@ sensor_frames = [
     "ta11_left_finger_link"
 ]
 
+newton_calib = [
+    0.45,
+    0.45
+]
+
+# newton_calib = [
+#     4.5,
+#     4.5
+# ]
+
 right_b = 0
 left_b = 0
 
@@ -82,7 +92,7 @@ try:
 
         processed_values = []
         for i in range(numChannels):
-            latest_values[i].append(d.binaryToCalibratedAnalogVoltage(gainIndex, results[2 + i]) * SCALING)
+            latest_values[i].append(newton_calib[i] * d.binaryToCalibratedAnalogVoltage(gainIndex, results[2 + i]) * SCALING)
 
             _b = right_b if i == 0 else left_b
             processed_values.append(-1 * (np.mean(latest_values[i]) + _b))
