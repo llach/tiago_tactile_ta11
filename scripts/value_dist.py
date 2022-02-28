@@ -5,13 +5,10 @@ import time
 import rospy
 
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 from tiago_tactile_msgs.msg import TA11
-sns.set(style="darkgrid")
 
-numSamples = 500
+numSamples = 1000
 
 sides = {
     0: "right",
@@ -45,9 +42,6 @@ sub.unregister()
 
 print("took {:.2f} seconds\n".format(time.time() - start_t))
 for k, v in sides.items():
-    # sns.distplot(values[k], hist=True, color='b')
-    # plt.title(v)
-    # plt.show()
 
     max_val = np.max(np.abs(values[k]))
     mean = np.mean(values[k])
