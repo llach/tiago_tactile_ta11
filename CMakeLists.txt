@@ -7,7 +7,7 @@ find_package(catkin REQUIRED
   tiago_tactile_msgs
   )
 
-disable_pal_flags()
+#disable_pal_flags()
 
 ###################################
 ## catkin specific configuration ##
@@ -24,9 +24,6 @@ include_directories(
     include
     ${catkin_INCLUDE_DIRS}
 )
-
-add_executable(ta11_pub src/nodes/ta11_pub.cpp src/ta11.cpp src/u6.cpp)
-target_link_libraries(ta11_pub ${catkin_LIBRARIES} labjackusb)
 
 install(PROGRAMS
   scripts/measure.py
